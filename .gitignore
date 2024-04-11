@@ -1,2 +1,5 @@
-.py[ci]
-/.idea/
+*.pyc
+*.egg-info
+build/
+dist/
+.idea/
