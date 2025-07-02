@@ -118,22 +118,20 @@ class FontAtlas:
 
     def set_glyph_positions(self) -> None:
         """ Set glyph positions on the atlas. """
-        i = 0
-        for row in range(self.rows):
-            for col in range(self.columns):
-                # Calculate X and Y position
-                x = col * self.cell_width
-                y = row * self.cell_height
+        glyph_count = len(self.glyphs)
+        for i in range(glyph_count):
+            col = i % self.columns
+            row = i // self.rows
+            print(f"{i}: {col} x {row}")
 
-                # Stop if we've reached the end of the glyphs
-                if i == len(self.glyphs):
-                    return
+            # Calculate X and Y position
+            x = col * self.cell_width
+            y = row * self.cell_height
 
-                # Update glyph position
-                glyph = self.glyphs[i]
-                glyph.x = x
-                glyph.y = y
-                i += 1
+            # Update glyph position
+            glyph = self.glyphs[i]
+            glyph.x = x
+            glyph.y = y
 
     def calculate_image_dimensions(self) -> tuple[int, int]:
         """ Calculate the dimensions for the image. """
