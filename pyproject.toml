@@ -1,24 +1,28 @@
 [project]
 name = "bont"
-version = "1.1.0"
-description = "A Python module for converting TrueType fonts to bitmap font texture atlas."
-authors = [{name="Andrew Kennedy"}]
+version = "0.1.0"
+description = "Convert TrueType fonts to bitmap font texture atlas"
 readme = "README.md"
+authors = [
+    { name = "akennedy", email = "andrewjacobkennedy@gmail.com" }
+]
 requires-python = ">=3.12"
 dependencies = [
-    "fonttools",
-    "pillow",
+    "fonttools>=4.61.1",
+    "pillow>=12.1.1",
 ]
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-]
-keywords = ["pygame", "game development"]
 
 [project.urls]
 Homepage = "https://github.com/kennedy0/bont"
 
+[tool.ruff]
+line-length = 120
+
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["uv_build>=0.9.10,<0.10.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.1",
+]
