@@ -35,14 +35,14 @@ class FontAtlas:
         self._glyphs_generated: bool = False
 
     def write_image(self, png_file: Path) -> None:
-        """ Render the font atlas to a png file. """
+        """Render the font atlas to a png file."""
         print(f"Writing image: {png_file.as_posix()}")
         if not self._glyphs_generated:
             self.generate_glyphs()
 
         # Create new mask image
         size = self.calculate_image_dimensions()
-        mask_image = Image.new('L', size)
+        mask_image = Image.new("L", size)
 
         # Add glyphs to mask image
         for glyph in self.glyphs:
@@ -56,7 +56,7 @@ class FontAtlas:
         image.save(png_file)
 
     def write_font_data(self, font_data_file: Path) -> None:
-        """ Write the font data to a file. """
+        """Write the font data to a file."""
         print(f"Writing font data: {font_data_file.as_posix()}")
 
         # Convert font data to dictionary
@@ -65,12 +65,12 @@ class FontAtlas:
             font_data[glyph.char] = glyph.to_dict()
 
         # Write font data to file
-        with font_data_file.open('w') as fp:
+        with font_data_file.open("w") as fp:
             data_str = json.dumps(font_data, indent=2)
             fp.write(data_str)
 
     def generate_glyphs(self) -> None:
-        """ Generate glyphs from characters. """
+        """Generate glyphs from characters."""
         for code, char in self.get_characters():
             glyph = Glyph(self.pil_font, char)
             self.glyphs.append(glyph)
@@ -85,7 +85,7 @@ class FontAtlas:
         self._glyphs_generated = True
 
     def get_characters(self) -> list[tuple[int, str]]:
-        """ Get a list of all characters available in the font.
+        """Get a list of all characters available in the font.
         Returns a list of (character_code, character) tuples
         """
         font = TTFont(self.ttf_font_file)
@@ -98,12 +98,12 @@ class FontAtlas:
         return characters
 
     def set_grid_size(self) -> None:
-        """ Set the number of rows and columns in the grid. """
+        """Set the number of rows and columns in the grid."""
         self.columns = math.ceil(math.sqrt(len(self.glyphs)))
         self.rows = math.floor(math.sqrt(len(self.glyphs)))
 
     def set_cell_size(self) -> None:
-        """ Set the cell width and height on the atlas. """
+        """Set the cell width and height on the atlas."""
         # Find max glyph width
         max_width = 0
         max_height = 0
@@ -117,7 +117,7 @@ class FontAtlas:
         self.cell_height = max_height
 
     def set_glyph_positions(self) -> None:
-        """ Set glyph positions on the atlas. """
+        """Set glyph positions on the atlas."""
         glyph_count = len(self.glyphs)
         for i in range(glyph_count):
             col = i % self.columns
@@ -133,7 +133,7 @@ class FontAtlas:
             glyph.y = y
 
     def calculate_image_dimensions(self) -> tuple[int, int]:
-        """ Calculate the dimensions for the image. """
+        """Calculate the dimensions for the image."""
         # Get the width or height, whichever is larger
         width = self.columns * self.cell_width
         height = self.rows * self.cell_height
