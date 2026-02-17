@@ -2,7 +2,8 @@ from PIL import Image, ImageFont
 
 
 class Glyph:
-    """ Represents a single character. """
+    """Represents a single character."""
+
     def __init__(self, pil_font: ImageFont.FreeTypeFont, char: str) -> None:
         # The PIL font object
         self.pil_font: ImageFont.FreeTypeFont = pil_font
@@ -22,12 +23,12 @@ class Glyph:
         self.image: Image.Image = self._char_to_image()
 
     def _char_to_image(self) -> Image.Image:
-        """ Create an image from the glyph's character. """
+        """Create an image from the glyph's character."""
         # Create full size image
         ascent, descent = self.pil_font.getmetrics()
         char_width = int(self.pil_font.getlength(self.char))
         char_height = ascent + descent
-        image = Image.new('L', (char_width, char_height))
+        image = Image.new("L", (char_width, char_height))
 
         # Update the width and height
         self.width = char_width
@@ -42,7 +43,7 @@ class Glyph:
             return image
 
         # Convert char mask to image
-        char_image = Image.frombytes('L', (cmask_w, cmask_h), bytes(char_mask))
+        char_image = Image.frombytes("L", (cmask_w, cmask_h), bytes(char_mask))
 
         # Paste char image
         char_bbox = self.pil_font.getbbox(self.char)
@@ -51,11 +52,11 @@ class Glyph:
         return image
 
     def to_dict(self) -> dict:
-        """ Convert the glyph to a dict. """
+        """Convert the glyph to a dict."""
         return {
-            'char': self.char,
-            'x': self.x,
-            'y': self.y,
-            'width': self.width,
-            'height': self.height,
+            "char": self.char,
+            "x": self.x,
+            "y": self.y,
+            "width": self.width,
+            "height": self.height,
         }
