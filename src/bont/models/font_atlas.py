@@ -107,6 +107,11 @@ class FontAtlas:
         self.columns = math.ceil(math.sqrt(len(self.glyphs)))
         self.rows = math.floor(math.sqrt(len(self.glyphs)))
 
+        # Add extra row if there's not enough space for the glyphs (occurs when the decimal of the sqrt >= .5).
+        # But use a simple 'while' logic to avoid edge cases with rounding errors.
+        while self.columns * self.rows < len(self.glyphs):
+            self.rows += 1
+
     def set_cell_size(self) -> None:
         """Set the cell width and height on the atlas."""
         # Find max glyph width
