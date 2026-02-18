@@ -43,8 +43,9 @@ class FontAtlas:
             self.generate_glyphs()
 
         # Create new mask image
-        size = self.calculate_image_dimensions()
-        mask_image = Image.new("L", size)
+        width = self.columns * self.cell_width
+        height = self.rows * self.cell_height
+        mask_image = Image.new("L", (width, height))
 
         # Add glyphs to mask image
         for glyph in self.glyphs:
@@ -135,20 +136,6 @@ class FontAtlas:
             glyph = self.glyphs[i]
             glyph.x = x
             glyph.y = y
-
-    def calculate_image_dimensions(self) -> tuple[int, int]:
-        """Calculate the dimensions for the image."""
-        # Get the width or height, whichever is larger
-        width = self.columns * self.cell_width
-        height = self.rows * self.cell_height
-        max_side = max(width, height)
-
-        # Step by powers of 2 until the width and height both fit
-        size = 2
-        while size < max_side:
-            size *= 2
-
-        return size, size
 
     @contextmanager
     def _suppress_fonttools_warning_logs(self) -> Generator:
