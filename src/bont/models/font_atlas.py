@@ -36,7 +36,6 @@ class FontAtlas:
 
     def write_image(self, png_file: Path) -> None:
         """Render the font atlas to a png file."""
-        print(f"Writing image: {png_file.as_posix()}")
         if not self._glyphs_generated:
             self.generate_glyphs()
 
@@ -57,8 +56,6 @@ class FontAtlas:
 
     def write_font_data(self, font_data_file: Path) -> None:
         """Write the font data to a file."""
-        print(f"Writing font data: {font_data_file.as_posix()}")
-
         # Convert font data to dictionary
         font_data = {}
         for glyph in self.glyphs:
