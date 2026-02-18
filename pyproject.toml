@@ -1,6 +1,6 @@
 [project]
 name = "bont"
-version = "1.3.0"
+version = "1.4.0"
 description = "Convert TrueType fonts to bitmap font texture atlas"
 readme = "README.md"
 authors = [
