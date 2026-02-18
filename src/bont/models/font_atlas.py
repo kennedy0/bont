@@ -126,7 +126,7 @@ class FontAtlas:
         glyph_count = len(self.glyphs)
         for i in range(glyph_count):
             col = i % self.columns
-            row = i // self.rows
+            row = i // self.columns
 
             # Calculate X and Y position
             x = col * self.cell_width
