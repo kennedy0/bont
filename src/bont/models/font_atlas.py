@@ -1,6 +1,9 @@
 import math
 import json
+import logging
+from contextlib import contextmanager
 from pathlib import Path
+from typing import Generator
 
 from fontTools.ttLib import TTFont
 from PIL import Image, ImageFont
@@ -86,7 +89,10 @@ class FontAtlas:
         Returns a list of (character_code, character) tuples
         """
         font = TTFont(self.ttf_font_file)
-        cmap = font.getBestCmap()
+
+        with self._suppress_fonttools_warning_logs():
+            cmap = font.getBestCmap()
+
         character_codes = list(cmap.keys())
 
         characters = []
@@ -142,3 +148,18 @@ class FontAtlas:
             size *= 2
 
         return size, size
+
+    @contextmanager
+    def _suppress_fonttools_warning_logs(self) -> Generator:
+        """Context manager to suppress (noisy, pointless) warning logs from fonttools."""
+        fonttools_loggers: list[tuple[logging.Logger, int]] = []
+
+        for name, logger in logging.root.manager.loggerDict.items():
+            if name.startswith("fontTools.") and hasattr(logger, "level"):
+                fonttools_loggers.append((logger, logger.level))
+                logger.setLevel(logging.ERROR)
+
+        yield
+
+        for logger, original_level in fonttools_loggers:
+            logger.setLevel(original_level)
