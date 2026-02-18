@@ -1,6 +1,9 @@
 import math
 import json
+import logging
+from contextlib import contextmanager
 from pathlib import Path
+from typing import Generator
 
 from fontTools.ttLib import TTFont
 from PIL import Image, ImageFont
@@ -36,13 +39,13 @@ class FontAtlas:
 
     def write_image(self, png_file: Path) -> None:
         """Render the font atlas to a png file."""
-        print(f"Writing image: {png_file.as_posix()}")
         if not self._glyphs_generated:
             self.generate_glyphs()
 
         # Create new mask image
-        size = self.calculate_image_dimensions()
-        mask_image = Image.new("L", size)
+        width = self.columns * self.cell_width
+        height = self.rows * self.cell_height
+        mask_image = Image.new("L", (width, height))
 
         # Add glyphs to mask image
         for glyph in self.glyphs:
@@ -57,8 +60,6 @@ class FontAtlas:
 
     def write_font_data(self, font_data_file: Path) -> None:
         """Write the font data to a file."""
-        print(f"Writing font data: {font_data_file.as_posix()}")
-
         # Convert font data to dictionary
         font_data = {}
         for glyph in self.glyphs:
@@ -89,8 +90,12 @@ class FontAtlas:
         Returns a list of (character_code, character) tuples
         """
         font = TTFont(self.ttf_font_file)
-        cmap = font.getBestCmap()
+
+        with self._suppress_fonttools_warning_logs():
+            cmap = font.getBestCmap()
+
         character_codes = list(cmap.keys())
+        character_codes.sort()
 
         characters = []
         for code in character_codes:
@@ -121,7 +126,7 @@ class FontAtlas:
         glyph_count = len(self.glyphs)
         for i in range(glyph_count):
             col = i % self.columns
-            row = i // self.rows
+            row = i // self.columns
 
             # Calculate X and Y position
             x = col * self.cell_width
@@ -132,16 +137,17 @@ class FontAtlas:
             glyph.x = x
             glyph.y = y
 
-    def calculate_image_dimensions(self) -> tuple[int, int]:
-        """Calculate the dimensions for the image."""
-        # Get the width or height, whichever is larger
-        width = self.columns * self.cell_width
-        height = self.rows * self.cell_height
-        max_side = max(width, height)
+    @contextmanager
+    def _suppress_fonttools_warning_logs(self) -> Generator:
+        """Context manager to suppress (noisy, pointless) warning logs from fonttools."""
+        fonttools_loggers: list[tuple[logging.Logger, int]] = []
 
-        # Step by powers of 2 until the width and height both fit
-        size = 2
-        while size < max_side:
-            size *= 2
+        for name, logger in logging.root.manager.loggerDict.items():
+            if name.startswith("fontTools.") and hasattr(logger, "level"):
+                fonttools_loggers.append((logger, logger.level))
+                logger.setLevel(logging.ERROR)
 
-        return size, size
+        yield
+
+        for logger, original_level in fonttools_loggers:
+            logger.setLevel(original_level)
