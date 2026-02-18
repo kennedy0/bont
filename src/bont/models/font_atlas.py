@@ -94,6 +94,7 @@ class FontAtlas:
             cmap = font.getBestCmap()
 
         character_codes = list(cmap.keys())
+        character_codes.sort()
 
         characters = []
         for code in character_codes:
